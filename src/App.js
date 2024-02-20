@@ -1,23 +1,18 @@
-import logo from './logo.svg';
 import './App.css';
+import Login from './login';
+import p2 from './p2.png'
+import { useState } from 'react';
+import Preprocess from './preprocess';
 
 function App() {
+  const [loggedIn, setLoggedIn]=useState(false);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className=''>
+        <img src={p2} alt="" height="150px"/>
+        {!loggedIn && <Login loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>}
+        {loggedIn && <Preprocess />}
+      </div>
     </div>
   );
 }
