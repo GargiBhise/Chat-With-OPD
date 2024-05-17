@@ -1,3 +1,5 @@
+'''Experimental Module to analyse trade-offs between various components'''
+
 from langchain.vectorstores import FAISS
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 
