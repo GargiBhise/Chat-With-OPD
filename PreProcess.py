@@ -5,8 +5,8 @@ import fitz  # PyMuPDF
 
 def get_filename_from_url(url):
     """ Extracts the filename from the URL and ensures it ends with .pdf"""
-    
-    # Parse the URL into six components
+
+    # Parse the URL into components
     parsed_url = urlparse(url)
     # Extract the base name of the URL (the part after the last slash)
     filename = os.path.basename(unquote(parsed_url.path))
@@ -61,3 +61,5 @@ def extract_text_from_pdf(pdf_path):
             text += page.get_text()
     # Return the extracted text
     return text
+
+
