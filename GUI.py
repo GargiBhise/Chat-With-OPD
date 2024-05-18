@@ -13,7 +13,8 @@ class App(tk.Tk):
         self.configure(bg="black")
 
         self.uploaded_files = []  # To keep track of uploaded files
-        self.combined_text = []   # To store combined text from all PDFs
+        self.combined_text = []   # Contains List of Dictionaries | Each Dictionary contains Metadata and Contents of Page.
+        # self.combined_text wil be sent to LLM to generate embeddings of the text.
         self.download_folder = "downloaded_pdfs"  # Folder to store downloaded PDFs
 
         # Sidebar frame
@@ -94,9 +95,9 @@ class App(tk.Tk):
                     local_path = download_pdf(self.download_folder, url)
                     if local_path:
                         self.display_message("System", f"File has been successfully downloaded: {local_path}")
-                        self.combined_text.append(open_and_read_pdf(local_path))
+                        self.combined_text = open_and_read_pdf(local_path)
             else:
-                self.combined_text.append(open_and_read_pdf(file))
+                self.combined_text = open_and_read_pdf(file)
         self.display_message("System", "PDFs processed successfully. You can now ask questions.")
 
     def add_file_to_list(self, filename):
