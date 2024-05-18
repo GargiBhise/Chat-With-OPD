@@ -34,20 +34,6 @@ def download_pdf(download_folder, url):
             raise Exception(f"Failed to download the file. Status code: {response.status_code}")
     return local_path
 
-# def extract_text_from_pdf(pdf_path):
-#     """
-#     Extracts text from a PDF file
-#     """
-#     # Initialize an empty string to hold the text
-#     text = ""
-#     # Open the PDF file
-#     with fitz.open(pdf_path) as doc:
-#         # For each page in the document
-#         for page in doc:
-#             # Add the text of the page to the string
-#             text += page.get_text()
-#     # Return the extracted text
-#     return text
 def text_formatter(text: str) -> str:
      """Performs minor formatting on text."""
      cleaned_text = text.replace("\n", " ").strip()
