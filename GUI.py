@@ -2,7 +2,7 @@
 
 import tkinter as tk
 from tkinter import filedialog, ttk, simpledialog, scrolledtext
-from PreProcess import download_pdf, text_formatter, open_and_read_pdf
+from PreProcess import download_pdf, open_and_read_pdf
 import os
 
 class App(tk.Tk):
@@ -13,7 +13,8 @@ class App(tk.Tk):
         self.configure(bg="black")
 
         self.uploaded_files = []  # To keep track of uploaded files
-        self.combined_text = ""   # To store combined text from all PDFs
+        self.combined_text = []   # To store combined text from all PDFs
+        self.download_folder = "downloaded_pdfs"  # Folder to store downloaded PDFs
 
         # Sidebar frame
         self.sidebar_frame = tk.Frame(self, bg="#1E1E1E", width=250)
@@ -85,18 +86,17 @@ class App(tk.Tk):
             self.add_file_to_list(filename)
 
     def process_files(self):
-        self.combined_text = ""
+        self.display_message("System", "Begin process_files method.")
         for file in self.uploaded_files:
             if not os.path.exists(file):
                 url = simpledialog.askstring("Input", f"File {file} not found. Please enter the URL to download:")
                 if url:
-                    success = download_pdf(file, url)
-                    if not success:
-                        continue
-                else:
-                    continue
-            pdf_text = Extract_text_from_pdf(file)
-            self.combined_text += pdf_text + "\n"
+                    local_path = download_pdf(self.download_folder, url)
+                    if local_path:
+                        self.display_message("System", f"File has been successfully downloaded: {local_path}")
+                        self.combined_text.append(open_and_read_pdf(local_path))
+            else:
+                self.combined_text.append(open_and_read_pdf(file))
         self.display_message("System", "PDFs processed successfully. You can now ask questions.")
 
     def add_file_to_list(self, filename):
