@@ -1,2 +1,5 @@
 tk-tools
 customtkinter
+requests
+PyMuPDF
+tqdm
