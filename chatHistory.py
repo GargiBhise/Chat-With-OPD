@@ -1,2 +1,1 @@
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
+# Module responsible for handling chat history
