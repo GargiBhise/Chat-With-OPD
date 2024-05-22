@@ -86,14 +86,12 @@ class App(tk.Tk):
         self.chat_box.pack(fill="both", expand=True)
 
     def browse_files(self):
-        print("[INFO] GUI.py -> browse_files")
         filetypes = (("PDF files", "*.pdf"), ("All files", "*.*"))  # user can select PDF files or any type of file.
         filenames = filedialog.askopenfilenames(title="Select files", initialdir="/", filetypes=filetypes)  # opens a file dialog where the user can select one or more files
         for filename in filenames:
             self.add_file_to_list(filename)
 
     def browse_folder(self):
-        print("[INFO] GUI.py -> browse_folder")
         foldername = filedialog.askdirectory(title="Select folder")  # opens a directory dialog where the user can select a folder
         if foldername:
             for filename in os.listdir(foldername):
@@ -102,12 +100,10 @@ class App(tk.Tk):
                     self.add_file_to_list(full_path)
 
     def process_files(self):
-        print("[INFO] GUI.py -> process_files")
         self.display_message("System", "Begin process_files method.")
         self.process_files_callback(self.uploaded_files)
 
     def add_file_to_list(self, filename):
-        print("[INFO] GUI.py -> add_file_to_list")
         self.uploaded_files.append(filename)
         file_frame = tk.Frame(self.file_list_frame, bg="#1E1E1E")
         file_frame.pack(fill="x", pady=2)
@@ -119,19 +115,16 @@ class App(tk.Tk):
         remove_button.pack(side="right", padx=10)
 
     def remove_file_from_list(self, filename, frame):
-        print("[INFO] GUI.py -> remove_file_from_list")
         self.uploaded_files.remove(filename)
         frame.destroy()
 
     def add_url(self):
-        print("[INFO] GUI.py -> add_url")
         url = self.url_entry.get()
         if url:
             self.uploaded_files.append(url)
             self.url_entry.delete(0, tk.END)
 
     def ask_question(self, event=None):
-        print("[INFO] GUI.py -> ask_question")
         question = self.entry.get()
         if question.strip():
             self.entry.delete(0, tk.END)
@@ -140,11 +133,9 @@ class App(tk.Tk):
             self.display_message("Bot", response)
 
     def get_response(self, question):
-        print("[INFO] GUI.py -> get_response")
         return self.get_response_callback(question)
 
     def display_message(self, sender, message):
-        print("[INFO] GUI.py -> display_message")
         self.chat_box.config(state="normal")
         self.chat_box.insert(tk.END, f"{sender}: {message}\n\n")
         self.chat_box.config(state="disabled")
