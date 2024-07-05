@@ -2,18 +2,22 @@
 
 import tkinter as tk
 from tkinter import filedialog, ttk, simpledialog, scrolledtext
-from PreProcess import download_pdf, extract_text_from_pdf
 import os
 
+
 class App(tk.Tk):
-    def __init__(self):
+    def __init__(self, process_files_callback, get_response_callback):
         super().__init__()
         self.title("Chat with multiple PDFs")
-        self.geometry("1000x600")
+        self.geometry("1000x600")   # Sets the size of the window to be 1000 pixels wide and 600 pixels tall.
         self.configure(bg="black")
 
         self.uploaded_files = []  # To keep track of uploaded files
-        self.combined_text = ""   # To store combined text from all PDFs
+        self.process_files_callback = process_files_callback
+        self.get_response_callback = get_response_callback
+        self.combined_text = []  # Contains List of Dictionaries where each contains Metadata and Contents of Page.
+        # self.combined_text wil be sent to LLM to generate embeddings of the text.
+        self.download_folder = "downloaded_pdfs"  # Folder to store downloaded PDFs
 
         # Sidebar frame
         self.sidebar_frame = tk.Frame(self, bg="#1E1E1E", width=250)
@@ -39,6 +43,9 @@ class App(tk.Tk):
         self.browse_button = tk.Button(self.sidebar_frame, text="Browse files", command=self.browse_files, bg="red", fg="white")
         self.browse_button.pack(pady=10)
 
+        self.browse_folder_button = tk.Button(self.sidebar_frame, text="Browse folder", command=self.browse_folder, bg="red", fg="white")
+        self.browse_folder_button.pack(pady=10)
+
         self.url_label = tk.Label(self.sidebar_frame, text="Or enter a PDF URL:", fg="white", bg="#1E1E1E", wraplength=200)
         self.url_label.pack(pady=5)
 
@@ -61,7 +68,7 @@ class App(tk.Tk):
         self.heading_label = tk.Label(self.heading_frame, text="Chat with multiple PDFs", fg="white", bg="black", font=("Helvetica", 24, "bold"))
         self.heading_label.pack(side="left")
 
-        self.icon_image = tk.PhotoImage(file=r"./icons/DB_Icon.png").subsample(8, 8)  # Replace with your icon path and adjust size
+        self.icon_image = tk.PhotoImage(file=r"./icons/DB_Icon.png").subsample(8, 8) 
         self.icon_label = tk.Label(self.heading_frame, image=self.icon_image, bg="black")
         self.icon_label.pack(side="left", padx=(10, 0))
 
@@ -79,25 +86,22 @@ class App(tk.Tk):
         self.chat_box.pack(fill="both", expand=True)
 
     def browse_files(self):
-        filetypes = (("PDF files", "*.pdf"), ("All files", "*.*"))
-        filenames = filedialog.askopenfilenames(title="Select files", filetypes=filetypes)
+        filetypes = (("PDF files", "*.pdf"), ("All files", "*.*"))  # user can select PDF files or any type of file.
+        filenames = filedialog.askopenfilenames(title="Select files", initialdir="/", filetypes=filetypes)  # opens a file dialog where the user can select one or more files
         for filename in filenames:
             self.add_file_to_list(filename)
 
+    def browse_folder(self):
+        foldername = filedialog.askdirectory(title="Select folder")  # opens a directory dialog where the user can select a folder
+        if foldername:
+            for filename in os.listdir(foldername):
+                full_path = os.path.join(foldername, filename)
+                if os.path.isfile(full_path):  # only add it to the list if it's a file
+                    self.add_file_to_list(full_path)
+
     def process_files(self):
-        self.combined_text = ""
-        for file in self.uploaded_files:
-            if not os.path.exists(file):
-                url = simpledialog.askstring("Input", f"File {file} not found. Please enter the URL to download:")
-                if url:
-                    success = download_pdf(file, url)
-                    if not success:
-                        continue
-                else:
-                    continue
-            pdf_text = extract_text_from_pdf(file)
-            self.combined_text += pdf_text + "\n"
-        self.display_message("System", "PDFs processed successfully. You can now ask questions.")
+        self.display_message("System", "Begin process_files method.")
+        self.process_files_callback(self.uploaded_files)
 
     def add_file_to_list(self, filename):
         self.uploaded_files.append(filename)
@@ -117,12 +121,8 @@ class App(tk.Tk):
     def add_url(self):
         url = self.url_entry.get()
         if url:
-            filename = url.split("/")[-1]
-            local_path = os.path.join(os.getcwd(), filename)
-            success = download_pdf(local_path, url)
-            if success:
-                self.add_file_to_list(local_path)
-                self.url_entry.delete(0, tk.END)
+            self.uploaded_files.append(url)
+            self.url_entry.delete(0, tk.END)
 
     def ask_question(self, event=None):
         question = self.entry.get()
@@ -133,9 +133,7 @@ class App(tk.Tk):
             self.display_message("Bot", response)
 
     def get_response(self, question):
-        if "first amendment" in question.lower():
-            return "The First Amendment prohibits the making of any law respecting an establishment of religion, impeding the free exercise of religion, abridging the freedom of speech, infringing on the freedom of the press, interfering with the right to peaceably assemble, or prohibiting the petitioning for a governmental redress of grievances."
-        return "This is a placeholder response based on the combined text of the uploaded PDFs."
+        return self.get_response_callback(question)
 
     def display_message(self, sender, message):
         self.chat_box.config(state="normal")
@@ -143,6 +141,6 @@ class App(tk.Tk):
         self.chat_box.config(state="disabled")
         self.chat_box.yview(tk.END)
 
+
 if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+    print("This module is not intended to be run directly. Please import it and run from another module.")
